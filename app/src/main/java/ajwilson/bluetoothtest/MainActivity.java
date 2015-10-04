@@ -31,8 +31,12 @@ public class MainActivity extends AppCompatActivity {
     private void enableBluetooth() {
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if( mBluetoothAdapter == null) {
+            // If they don't have bluetooth then just print an error for now, perhaps a popup
+            // to explain that their device doesn't support bluetooth.
             System.out.println("No bluetooth");
         } else {
+
+            // If they have bluetooth then enable it
             if (!mBluetoothAdapter.isEnabled()) {
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
@@ -47,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
         sendTest.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Do shit
                 System.out.println("Send Test Button Pressed");
             }
         });
@@ -55,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
         pairDevice.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Do shit
                 System.out.println("Pair device button pressed");
             }
         });
