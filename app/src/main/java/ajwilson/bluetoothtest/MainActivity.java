@@ -1,5 +1,7 @@
 package ajwilson.bluetoothtest;
 
+import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -13,16 +15,22 @@ public class MainActivity extends AppCompatActivity {
     private Button pairDevice;
     private Button sendTest;
 
-    // Bluetooth helper class
-    private Bluetooth bluetooth = new Bluetooth();
+    private final static int REQUEST_ENABLE_BT = 1;
+    private boolean paired = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Request the user to enable bluetooth
-        bluetooth.requestEnableBluetooth();
+
+        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        if ( adapter != null ) {
+            if (!adapter.isEnabled()) {
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            }
+        }
 
         addListenerOnButtons();
     }
