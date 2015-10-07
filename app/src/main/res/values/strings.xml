@@ -4,6 +4,7 @@
     <string name="hello_world">NED Bluetooth Test!</string>
     <string name="action_settings">Settings</string>
 
-    <string name="pair_device">Pair</string>
+    <string name="plane1">Plane #1</string>
+    <string name="plane2">Plane #2</string>
     <string name="send_test">Send Test</string>
 </resources>

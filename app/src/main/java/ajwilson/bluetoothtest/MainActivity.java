@@ -1,6 +1,9 @@
 package ajwilson.bluetoothtest;
 
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,22 +12,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.FrameLayout;
 
 public class MainActivity extends AppCompatActivity {
-
-    private Button pairDevice;
+    final Context context = this;
+    private Button plane1;
+    private Button plane2;
     private Button sendTest;
+    private String btaddr = "";
 
     private final static int REQUEST_ENABLE_BT = 1;
-    private boolean paired = false;
+    private BluetoothAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        adapter = BluetoothAdapter.getDefaultAdapter();
         if ( adapter != null ) {
             if (!adapter.isEnabled()) {
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -37,19 +42,50 @@ public class MainActivity extends AppCompatActivity {
 
     private void addListenerOnButtons() {
         sendTest = (Button) findViewById( R.id.send_test);
-        pairDevice = (Button) findViewById( R.id.pair_device);
+        plane1 = (Button) findViewById( R.id.plane1);
+        plane2 = (Button) findViewById( R.id.plane2);
 
         sendTest.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 System.out.println("Send Test Button Pressed");
+                if( btaddr.length() == 0 ) {
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder( context );
+
+                    // set title
+                    alertDialogBuilder.setTitle("Error");
+
+                    // set dialog message
+                    alertDialogBuilder
+                            .setMessage("You must select a plane to control")
+                            .setCancelable(true)
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+
+                    // create alert dialog
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+
+                    // show it
+                    alertDialog.show();
+                    return;
+                }
             }
         });
 
-        pairDevice.setOnClickListener(new OnClickListener() {
+        plane1.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println("Pair device button pressed");
+                System.out.println("Plane #1");
+            }
+        });
+
+        plane2.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("Plane #2");
             }
         });
     }

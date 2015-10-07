@@ -12,15 +12,24 @@
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:layout_marginTop="20dp"
-        android:text="@string/pair_device"
-        android:onClick="pairDevice"
-        android:id="@+id/pair_device"
+        android:text="@string/plane1"
+        android:onClick="plane1"
+        android:id="@+id/plane1"
         />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:layout_marginTop="70dp"
+        android:text="@string/plane2"
+        android:onClick="plane2"
+        android:id="@+id/plane2"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginTop="120dp"
         android:text="@string/send_test"
         android:onClick="sendTest"
         android:id="@+id/send_test"
