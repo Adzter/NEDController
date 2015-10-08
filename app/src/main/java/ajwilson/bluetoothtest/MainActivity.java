@@ -2,6 +2,8 @@ package ajwilson.bluetoothtest;
 
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,7 +14,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.FrameLayout;
+
+import java.lang.reflect.Method;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
     final Context context = this;
@@ -21,8 +25,12 @@ public class MainActivity extends AppCompatActivity {
     private Button sendTest;
     private String btaddr = "";
 
-    private final static int REQUEST_ENABLE_BT = 1;
+    private boolean connected = false;
+
+    private BluetoothDevice device;
     private BluetoothAdapter adapter;
+    private BluetoothSocket socket;
+    private final static int REQUEST_ENABLE_BT = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +79,31 @@ public class MainActivity extends AppCompatActivity {
                     // show it
                     alertDialog.show();
                     return;
+                } else {
+                    // If discovery is still enabled this will slow down the process
+                    adapter.cancelDiscovery();
+
+                    // Find the device that we want to connect
+                    device = adapter.getRemoteDevice( btaddr );
+                    System.out.println( device.getName() );
+
+                    // Use our unique ID
+                    UUID uuid = UUID.fromString("00000003-0000-1000-8000-00805F9B34FB");
+
+                    // Attempt to open a socket
+                    try {
+
+                        // Make sure the unique ID on the server and client match
+                        socket = device.createRfcommSocketToServiceRecord(uuid);
+
+                        // Connect
+                        socket.connect();
+                        System.out.println("Bluetooth Socket Method 1: Connected");
+                    }
+                    catch ( Exception e ) {
+                        System.out.println("Bluetooth Socket Error: " + e );
+                    }
+
                 }
             }
         });
@@ -79,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 System.out.println("Plane #1");
+                btaddr = "00:15:83:3D:0A:57";
             }
         });
 
