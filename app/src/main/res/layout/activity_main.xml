@@ -44,4 +44,10 @@
         android:id="@+id/disconnect"
         />
 
+    <ajwilson.nedcontroller.JoystickView
+        android:id="@+id/joystickView"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="220dp">
+    </ajwilson.nedcontroller.JoystickView>
 </RelativeLayout>

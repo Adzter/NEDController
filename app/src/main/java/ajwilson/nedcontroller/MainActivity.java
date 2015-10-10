@@ -12,26 +12,36 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
+
+
 
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
     final Context context = this;
+
+    // Buttons
     private Button plane1;
     private Button plane2;
     private Button connect;
     private Button disconnect;
 
+    // Bluetooth variables
     private String btaddr = "";
-
     private boolean connected = false;
-
     private BluetoothDevice device;
     private BluetoothAdapter adapter;
     private BluetoothSocket socket;
     private ConnectedThread dataThread;
     private final static int REQUEST_ENABLE_BT = 1;
+
+    // Joystick controls
+    private TextView angleTextView;
+    private TextView powerTextView;
+    private TextView directionTextView;
+    private JoystickView joystick;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,9 +57,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         addListenerOnButtons();
+        createJoystick();
     }
-
-
 
     private void addListenerOnButtons() {
         disconnect = (Button) findViewById( R.id.disconnect);
@@ -63,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
                 if (btaddr.length() == 0) {
                     Dialogue dialogue = new Dialogue(context, "Error", "Please select a plane");
                     return;
-                } else if( connected ) {
+                } else if (connected) {
                     Dialogue dialogue = new Dialogue(context, "Error", "You are already connected");
                 } else {
                     // If discovery is still enabled this will slow down the process
@@ -121,16 +130,15 @@ public class MainActivity extends AppCompatActivity {
         disconnect.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if( socket != null ) {
+                if (socket != null) {
                     if (socket.isConnected()) {
                         try {
                             socket.close();
                             Toast toast = Toast.makeText(context, "Disconnected from Plane", Toast.LENGTH_SHORT);
                             toast.show();
                             return;
-                        }
-                        catch( Exception e ) {
-                            
+                        } catch (Exception e) {
+
                         }
                     }
                 }
@@ -140,6 +148,20 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void createJoystick() {
+        // Joystick code here
+        joystick = (JoystickView) findViewById(R.id.joystickView);
+
+        joystick.setOnJoystickMoveListener(new JoystickView.OnJoystickMoveListener() {
+            @Override
+            public void onValueChanged(int angle, int power, int direction) {
+                //angleTextView.setText(" " + String.valueOf(angle) + "°");
+                //powerTextView.setText(" " + String.valueOf(power) + "%");
+
+                dataThread.write((String.valueOf(power) + "/" + String.valueOf(angle)).getBytes());
+            }
+        }, JoystickView.DEFAULT_LOOP_INTERVAL);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
