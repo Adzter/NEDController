@@ -1,11 +1,9 @@
-package ajwilson.bluetoothtest;
+package ajwilson.nedcontroller;
 
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 
 import java.util.UUID;
 
@@ -22,6 +21,8 @@ public class MainActivity extends AppCompatActivity {
     private Button plane1;
     private Button plane2;
     private Button connect;
+    private Button disconnect;
+
     private String btaddr = "";
 
     private boolean connected = false;
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void addListenerOnButtons() {
+        disconnect = (Button) findViewById( R.id.disconnect);
         connect = (Button) findViewById( R.id.connect);
         plane1 = (Button) findViewById( R.id.plane1);
         plane2 = (Button) findViewById( R.id.plane2);
@@ -58,16 +60,18 @@ public class MainActivity extends AppCompatActivity {
         connect.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if( btaddr.length() == 0 ) {
-                    Dialogue dialogue = new Dialogue( context, "Error", "Please select a plane" );
+                if (btaddr.length() == 0) {
+                    Dialogue dialogue = new Dialogue(context, "Error", "Please select a plane");
                     return;
+                } else if( connected ) {
+                    Dialogue dialogue = new Dialogue(context, "Error", "You are already connected");
                 } else {
                     // If discovery is still enabled this will slow down the process
                     adapter.cancelDiscovery();
 
                     // Find the device that we want to connect
-                    device = adapter.getRemoteDevice( btaddr );
-                    System.out.println( device.getName() );
+                    device = adapter.getRemoteDevice(btaddr);
+                    System.out.println(device.getName());
 
                     // Use our unique ID
                     UUID uuid = UUID.fromString("00000003-0000-1000-8000-00805F9B34FB");
@@ -82,13 +86,18 @@ public class MainActivity extends AppCompatActivity {
                         socket.connect();
                         System.out.println("Bluetooth Socket: Connected");
 
+                        // Show notification if successful
+                        Toast toast = Toast.makeText(context, "Connected to Plane", Toast.LENGTH_SHORT);
+                        toast.show();
+
                         dataThread = new ConnectedThread(socket);
                         dataThread.start();
                         dataThread.write("I'm sending data from an Android App".getBytes());
+
                         connected = true;
-                    }
-                    catch ( Exception e ) {
-                        System.out.println("Bluetooth Socket Error: " + e );
+                    } catch (Exception e) {
+                        // Show error message in case it fails
+                        Dialogue dialogue = new Dialogue(context, "Error", "Failed to connect");
                     }
                 }
             }
@@ -106,6 +115,27 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 System.out.println("Plane #2");
+            }
+        });
+
+        disconnect.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if( socket != null ) {
+                    if (socket.isConnected()) {
+                        try {
+                            socket.close();
+                            Toast toast = Toast.makeText(context, "Disconnected from Plane", Toast.LENGTH_SHORT);
+                            toast.show();
+                            return;
+                        }
+                        catch( Exception e ) {
+                            
+                        }
+                    }
+                }
+                Toast toast = Toast.makeText(context, "Not connected to a Plane", Toast.LENGTH_SHORT);
+                toast.show();
             }
         });
     }
@@ -126,7 +156,9 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_about) {
+            Intent intent = new Intent(this, AboutActivity.class);
+            startActivity( intent );
             return true;
         }
 

@@ -1,4 +1,4 @@
-package ajwilson.bluetoothtest;
+package ajwilson.nedcontroller;
 
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
