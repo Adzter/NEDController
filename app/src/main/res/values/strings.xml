@@ -6,5 +6,5 @@
 
     <string name="plane1">Plane #1</string>
     <string name="plane2">Plane #2</string>
-    <string name="send_test">Send Test</string>
+    <string name="connect">Connect</string>
 </resources>

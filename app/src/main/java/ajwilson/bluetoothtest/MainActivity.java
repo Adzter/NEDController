@@ -15,14 +15,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-import java.lang.reflect.Method;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
     final Context context = this;
     private Button plane1;
     private Button plane2;
-    private Button sendTest;
+    private Button connect;
     private String btaddr = "";
 
     private boolean connected = false;
@@ -30,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothDevice device;
     private BluetoothAdapter adapter;
     private BluetoothSocket socket;
+    private ConnectedThread dataThread;
     private final static int REQUEST_ENABLE_BT = 1;
 
     @Override
@@ -48,36 +48,18 @@ public class MainActivity extends AppCompatActivity {
         addListenerOnButtons();
     }
 
+
+
     private void addListenerOnButtons() {
-        sendTest = (Button) findViewById( R.id.send_test);
+        connect = (Button) findViewById( R.id.connect);
         plane1 = (Button) findViewById( R.id.plane1);
         plane2 = (Button) findViewById( R.id.plane2);
 
-        sendTest.setOnClickListener(new OnClickListener() {
+        connect.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println("Send Test Button Pressed");
                 if( btaddr.length() == 0 ) {
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder( context );
-
-                    // set title
-                    alertDialogBuilder.setTitle("Error");
-
-                    // set dialog message
-                    alertDialogBuilder
-                            .setMessage("You must select a plane to control")
-                            .setCancelable(true)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                }
-                            });
-
-                    // create alert dialog
-                    AlertDialog alertDialog = alertDialogBuilder.create();
-
-                    // show it
-                    alertDialog.show();
+                    Dialogue dialogue = new Dialogue( context, "Error", "Please select a plane" );
                     return;
                 } else {
                     // If discovery is still enabled this will slow down the process
@@ -98,12 +80,16 @@ public class MainActivity extends AppCompatActivity {
 
                         // Connect
                         socket.connect();
-                        System.out.println("Bluetooth Socket Method 1: Connected");
+                        System.out.println("Bluetooth Socket: Connected");
+
+                        dataThread = new ConnectedThread(socket);
+                        dataThread.start();
+                        dataThread.write("I'm sending data from an Android App".getBytes());
+                        connected = true;
                     }
                     catch ( Exception e ) {
                         System.out.println("Bluetooth Socket Error: " + e );
                     }
-
                 }
             }
         });

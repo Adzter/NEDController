@@ -30,9 +30,9 @@
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:layout_marginTop="120dp"
-        android:text="@string/send_test"
-        android:onClick="sendTest"
-        android:id="@+id/send_test"
+        android:text="@string/connect"
+        android:onClick="connect"
+        android:id="@+id/connect"
         />
 
 </RelativeLayout>
