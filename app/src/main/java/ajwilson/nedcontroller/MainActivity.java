@@ -133,7 +133,14 @@ public class MainActivity extends AppCompatActivity {
                 if (socket != null) {
                     if (socket.isConnected()) {
                         try {
+
+                            // Close the socket
                             socket.close();
+
+                            // Make it so we can reconnect
+                            connected = false;
+
+                            // Show notification
                             Toast toast = Toast.makeText(context, "Disconnected from Plane", Toast.LENGTH_SHORT);
                             toast.show();
                             return;
@@ -157,8 +164,9 @@ public class MainActivity extends AppCompatActivity {
             public void onValueChanged(int angle, int power, int direction) {
                 //angleTextView.setText(" " + String.valueOf(angle) + "°");
                 //powerTextView.setText(" " + String.valueOf(power) + "%");
-
-                dataThread.write((String.valueOf(power) + "/" + String.valueOf(angle)).getBytes());
+                if( connected ) {
+                    dataThread.write((String.valueOf(power) + "/" + String.valueOf(angle)).getBytes());
+                }
             }
         }, JoystickView.DEFAULT_LOOP_INTERVAL);
     }
